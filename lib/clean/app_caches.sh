@@ -185,7 +185,7 @@ clean_xcode_derived_data() {
             [[ $dry_run_count -eq 1 ]] && project_label="project"
             local size_human
             size_human=$(bytes_to_human "$((size_kb * 1024))")
-            echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} Xcode DerivedData · ${dry_run_count} ${project_label}, $(colorize_human_size "$size_human")"
+            mole_print_cleanup_row "Xcode DerivedData" "$size_human" "${dry_run_count} ${project_label}, "
             note_activity
         fi
         if [[ -n "$dry_run_stopped_reason" ]]; then
@@ -248,9 +248,7 @@ clean_xcode_derived_data() {
         [[ $removed -eq 1 ]] && project_label="project"
         local size_human
         size_human=$(bytes_to_human "$((removed_size_kb * 1024))")
-        local line_color
-        line_color=$(cleanup_result_color_kb "$removed_size_kb" 2> /dev/null || echo "$GREEN")
-        echo -e "  ${line_color}${ICON_SUCCESS}${NC} Xcode DerivedData · ${removed} ${project_label}, $(colorize_human_size "$size_human")"
+        mole_print_cleanup_row "Xcode DerivedData" "$size_human" "${removed} ${project_label}, "
         mole_add_cleaned_row "$removed" "$removed_size_kb"
         note_activity
     fi
@@ -1710,13 +1708,7 @@ clean_autodesk_fusion_old_bundles() {
     if [[ $cleaned_count -gt 0 ]]; then
         local size_human
         size_human=$(bytes_to_human "$((total_size * 1024))")
-        if [[ "${DRY_RUN:-false}" == "true" ]]; then
-            echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} Autodesk Fusion old versions${NC} · ${YELLOW}${cleaned_count} dirs, $(colorize_human_size "$size_human") ${YELLOW}dry${NC}"
-        else
-            local line_color
-            line_color=$(cleanup_result_color_kb "$total_size")
-            echo -e "  ${line_color}${ICON_SUCCESS}${NC} Autodesk Fusion old versions${NC} · ${line_color}${cleaned_count} dirs, $(colorize_human_size "$size_human")"
-        fi
+        mole_print_cleanup_row "Autodesk Fusion old versions" "$size_human" "${cleaned_count} dirs, "
         mole_add_cleaned_row "$cleaned_count" "$total_size"
         note_activity
     fi
@@ -1918,13 +1910,7 @@ clean_neatdm_stale_segments() {
     if [[ $stale_count -gt 0 ]]; then
         local size_human
         size_human=$(bytes_to_human "$((stale_kb * 1024))")
-        if [[ "$DRY_RUN" == "true" ]]; then
-            echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} NeatDM stale downloads · ${stale_count} items, $(colorize_human_size "$size_human") ${YELLOW}dry${NC}"
-        else
-            local line_color
-            line_color=$(cleanup_result_color_kb "$stale_kb")
-            echo -e "  ${line_color}${ICON_SUCCESS}${NC} NeatDM stale downloads · ${stale_count} items, $(colorize_human_size "$size_human")"
-        fi
+        mole_print_cleanup_row "NeatDM stale downloads" "$size_human" "${stale_count} items, "
         mole_add_cleaned_row "$stale_count" "$stale_kb"
         note_activity
     fi

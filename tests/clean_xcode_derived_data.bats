@@ -20,7 +20,6 @@ start_section_spinner() { :; }
 stop_section_spinner() { :; }
 note_activity() { :; }
 is_path_whitelisted() { return 1; }
-cleanup_result_color_kb() { echo "\033[0;32m"; }
 bytes_to_human() { echo "36 KB"; }
 DRY_RUN=false
 files_cleaned=0
@@ -61,7 +60,6 @@ source "$PROJECT_ROOT/lib/clean/app_caches.sh"
 start_section_spinner() { :; }
 stop_section_spinner() { :; }
 note_activity() { :; }
-cleanup_result_color_kb() { echo "\033[0;32m"; }
 bytes_to_human() { echo "36 KB"; }
 DRY_RUN=false
 files_cleaned=0
@@ -176,7 +174,6 @@ start_section_spinner() { :; }
 stop_section_spinner() { :; }
 note_activity() { :; }
 is_path_whitelisted() { return 1; }
-cleanup_result_color_kb() { echo ""; }
 bytes_to_human() { echo "$1 bytes"; }
 get_path_size_kb() { echo 1; }
 safe_remove() { command rm -rf "$1"; }
@@ -258,7 +255,6 @@ source "$PROJECT_ROOT/lib/core/common.sh"
 source "$PROJECT_ROOT/lib/clean/app_caches.sh"
 note_activity() { :; }
 is_path_whitelisted() { return 1; }
-cleanup_result_color_kb() { echo ""; }
 bytes_to_human() { echo "$1 bytes"; }
 get_path_size_kb() {
     printf 'size\n' >> "$HOME/derived-size-probes"

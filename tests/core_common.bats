@@ -74,22 +74,25 @@ EOF
     [ "${lines[5]}" = "-1.0MB" ]
 }
 
-@test "cleanup_result_color_kb always returns green" {
-    run env HOME="$HOME" PROJECT_ROOT="$PROJECT_ROOT" /bin/bash --noprofile --norc <<'EOF'
+@test "mole_print_cleanup_row renders dry-run and real rows from one format" {
+    run env -u NO_COLOR HOME="$HOME" PROJECT_ROOT="$PROJECT_ROOT" MOLE_TEST_NO_AUTH=1 /bin/bash --noprofile --norc <<'EOF'
 set -euo pipefail
 source "$PROJECT_ROOT/lib/core/common.sh"
-
-small_kb=1
-large_kb=$(((MOLE_ONE_GB_BYTES * 2) / 1024))
-
-if [[ "$(cleanup_result_color_kb "$small_kb")" == "$GREEN" ]] &&
-    [[ "$(cleanup_result_color_kb "$large_kb")" == "$GREEN" ]]; then
-    echo "ok"
-fi
+DRY_RUN=true
+mole_print_cleanup_row "Test cache" "2.50GB" "3 dirs, " ", 1 skipped"
+mole_print_cleanup_row "Partial cache" ""
+DRY_RUN=false
+mole_print_cleanup_row "Test cache" "2.50GB" "3 dirs, " ", 1 skipped"
+mole_print_cleanup_row "Partial cache" ""
 EOF
 
     [ "$status" -eq 0 ]
-    [ "$output" = "ok" ]
+    local y=$'\033[0;33m' g=$'\033[0;32m' r=$'\033[0;31m' nc=$'\033[0m'
+    # Only the icon and the trailing "dry" differ between the two modes.
+    [ "${lines[0]}" = "  ${y}→${nc} Test cache · 3 dirs, ${r}2.50GB${nc} ${y}dry${nc}, 1 skipped" ]
+    [ "${lines[1]}" = "  ${y}→${nc} Partial cache · ${y}dry${nc}" ]
+    [ "${lines[2]}" = "  ${g}✓${nc} Test cache · 3 dirs, ${r}2.50GB${nc}, 1 skipped" ]
+    [ "${lines[3]}" = "  ${g}✓${nc} Partial cache · ${g}cleaned${nc}" ]
 }
 
 @test "mole_is_reverse_dns_bundle_id rejects defaults domains and glob-like ids" {

@@ -1924,7 +1924,7 @@ clean_xcode_system_coresimulator_caches() {
         if [[ "$cleanable_count" -gt 0 ]]; then
             local total_size_human
             total_size_human=$(bytes_to_human "$((total_size_kb * 1024))")
-            echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} Xcode Simulator system cache · would remove ${cleanable_count} entries ($(colorize_human_size "$total_size_human"))"
+            mole_print_cleanup_row "Xcode Simulator system cache" "$total_size_human" "would remove ${cleanable_count} entries, "
             note_activity
         fi
         if [[ -n "$stop_reason" ]]; then
@@ -1989,13 +1989,11 @@ clean_xcode_system_coresimulator_caches() {
     if [[ $removed_count -gt 0 ]]; then
         local removed_human
         removed_human=$(bytes_to_human "$((removed_size_kb * 1024))")
-        local line_color
-        line_color=$(cleanup_result_color_kb "$removed_size_kb")
+        local skipped_note=""
         if [[ $skipped_count -gt 0 ]]; then
-            echo -e "  ${line_color}${ICON_SUCCESS}${NC} Xcode Simulator system cache · removed ${removed_count} ($(colorize_human_size "$removed_human")), skipped ${skipped_count} protected"
-        else
-            echo -e "  ${line_color}${ICON_SUCCESS}${NC} Xcode Simulator system cache · removed ${removed_count} ($(colorize_human_size "$removed_human"))"
+            skipped_note=", skipped ${skipped_count} protected"
         fi
+        mole_print_cleanup_row "Xcode Simulator system cache" "$removed_human" "removed ${removed_count}, " "$skipped_note"
         if [[ $failed_count -gt 0 ]]; then
             echo -e "  ${GRAY}${ICON_WARNING}${NC} Xcode Simulator system cache · could not remove ${failed_count} entries"
         fi
@@ -2203,7 +2201,7 @@ clean_xcode_device_support() {
                 done
                 if [[ "$dry_run_count" -gt 0 ]]; then
                     stale_size_human=$(bytes_to_human "$((stale_size_kb * 1024))")
-                    echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} ${display_name} · would remove ${dry_run_count} old versions ($(colorize_human_size "$stale_size_human")), keeping ${keep_count} most recent"
+                    mole_print_cleanup_row "$display_name" "$stale_size_human" "would remove ${dry_run_count} old versions, " ", keeping ${keep_count} most recent"
                     note_activity
                 fi
                 if [[ -n "$dry_stop_reason" ]]; then
@@ -2254,9 +2252,7 @@ clean_xcode_device_support() {
 
                 if [[ $removed_count -gt 0 ]]; then
                     stale_size_human=$(bytes_to_human "$((removed_size_kb * 1024))")
-                    local line_color
-                    line_color=$(cleanup_result_color_kb "$removed_size_kb")
-                    echo -e "  ${line_color}${ICON_SUCCESS}${NC} ${display_name} · removed ${removed_count} old versions, $(colorize_human_size "$stale_size_human")"
+                    mole_print_cleanup_row "$display_name" "$stale_size_human" "removed ${removed_count} old versions, "
                     mole_add_cleaned_row "$removed_count" "$removed_size_kb"
                     note_activity
                 fi
@@ -2753,7 +2749,7 @@ clean_dev_mobile() {
                                 record_dry_run_cleanup_target "$unavailable_path" "$unavailable_path_size_kb" 1 "$unavailable_size_known" || true
                             fi
                         done
-                        echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} Xcode unavailable simulators · would clean ${unavailable_before}, $(colorize_human_size "$unavailable_size_human")"
+                        mole_print_cleanup_row "Xcode unavailable simulators" "$unavailable_size_human" "would clean ${unavailable_before}, "
                         note_activity
                     else
                         debug_log "Xcode unavailable simulators already clean"
@@ -2786,13 +2782,11 @@ clean_dev_mobile() {
                                     removed_unavailable=0
                                 fi
 
-                                local line_color
-                                line_color=$(cleanup_result_color_kb "$unavailable_size_kb")
+                                local outcome="cleanup completed, "
                                 if ((removed_unavailable > 0)); then
-                                    echo -e "  ${line_color}${ICON_SUCCESS}${NC} Xcode unavailable simulators · removed ${removed_unavailable}, $(colorize_human_size "$unavailable_size_human")"
-                                else
-                                    echo -e "  ${line_color}${ICON_SUCCESS}${NC} Xcode unavailable simulators · cleanup completed, $(colorize_human_size "$unavailable_size_human")"
+                                    outcome="removed ${removed_unavailable}, "
                                 fi
+                                mole_print_cleanup_row "Xcode unavailable simulators" "$unavailable_size_human" "$outcome"
                             fi
                         else
                             stop_section_spinner

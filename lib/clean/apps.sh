@@ -94,13 +94,7 @@ clean_ds_store_tree() {
         local size_human
         size_human=$(bytes_to_human "$total_bytes")
         local size_kb=$(((total_bytes + 1023) / 1024))
-        if [[ "$DRY_RUN" == "true" ]]; then
-            echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} $label${NC} · ${YELLOW}$file_count files, $(colorize_human_size "$size_human") ${YELLOW}dry${NC}"
-        else
-            local line_color
-            line_color=$(cleanup_result_color_kb "$size_kb")
-            echo -e "  ${line_color}${ICON_SUCCESS}${NC} $label${NC} · ${line_color}$file_count files, $(colorize_human_size "$size_human")"
-        fi
+        mole_print_cleanup_row "$label" "$size_human" "$file_count files, "
         mole_add_cleaned_row "$file_count" "$size_kb"
         note_activity
     fi

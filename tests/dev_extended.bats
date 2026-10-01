@@ -321,7 +321,6 @@ set -euo pipefail
 source "$PROJECT_ROOT/lib/core/common.sh"
 source "$PROJECT_ROOT/lib/clean/dev.sh"
 note_activity() { :; }
-cleanup_result_color_kb() { echo ""; }
 bytes_to_human() { echo "$1 bytes"; }
 get_path_size_kb() { echo 1; }
 should_protect_path() { return 1; }
@@ -364,7 +363,6 @@ set -euo pipefail
 source "$PROJECT_ROOT/lib/core/common.sh"
 source "$PROJECT_ROOT/lib/clean/dev.sh"
 note_activity() { :; }
-cleanup_result_color_kb() { echo ""; }
 bytes_to_human() { echo "$1 bytes"; }
 get_path_size_kb() { echo 1; }
 should_protect_path() { return 1; }
@@ -408,7 +406,6 @@ source "$PROJECT_ROOT/lib/core/common.sh"
 source "$PROJECT_ROOT/lib/clean/dev.sh"
 target="$HOME/CompletedWhitelistedDeviceSupport/17.2/Symbols/System/Library/Caches/whitelisted"
 note_activity() { :; }
-cleanup_result_color_kb() { echo ""; }
 bytes_to_human() { echo "$1 bytes"; }
 get_path_size_kb() { echo 1; }
 should_protect_path() { return 1; }
@@ -1278,7 +1275,6 @@ note_activity() { :; }
 has_sudo_session() { return 0; }
 is_path_whitelisted() { return 1; }
 should_protect_path() { return 1; }
-cleanup_result_color_kb() { echo ""; }
 bytes_to_human() { echo "$1 bytes"; }
 get_path_size_kb() { echo 1; }
 simulator_started=false
@@ -2556,7 +2552,6 @@ note_activity() { :; }
 debug_log() { :; }
 start_section_spinner() { :; }
 stop_section_spinner() { :; }
-cleanup_result_color_kb() { printf '%s' "$GREEN"; }
 xcrun() { return 0; }
 _resolve_simctl_developer_dir() {
     _MOLE_SIMCTL_DEVELOPER_DIR="$HOME/Xcode.app/Contents/Developer"

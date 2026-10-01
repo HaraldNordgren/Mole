@@ -1169,7 +1169,7 @@ clean_time_machine_failed_backups() {
                     if declare -f record_dry_run_cleanup_target > /dev/null 2>&1; then
                         record_dry_run_cleanup_target "$inprogress_file" "$size_kb" 1 true || continue
                     fi
-                    echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} Incomplete backup: $backup_name${NC} · $(colorize_human_size "$size_human") ${YELLOW}dry${NC}"
+                    mole_print_cleanup_row "Incomplete backup: $backup_name" "$size_human"
                     tm_cleaned=$((tm_cleaned + 1))
                     note_activity
                     continue
@@ -1200,9 +1200,7 @@ clean_time_machine_failed_backups() {
                     run_with_timeout "$tm_delete_timeout" tmutil delete "$inprogress_file" 2> /dev/null || tm_delete_rc=$?
                 fi
                 if [[ $tm_delete_rc -eq 0 ]]; then
-                    local line_color
-                    line_color=$(cleanup_result_color_kb "$size_kb")
-                    echo -e "  ${line_color}${ICON_SUCCESS}${NC} Incomplete backup: $backup_name${NC} · $(colorize_human_size "$size_human")"
+                    mole_print_cleanup_row "Incomplete backup: $backup_name" "$size_human"
                     tm_cleaned=$((tm_cleaned + 1))
                     mole_add_cleaned_row 1 "$size_kb"
                     note_activity
@@ -1323,7 +1321,7 @@ clean_time_machine_failed_backups() {
                         if declare -f record_dry_run_cleanup_target > /dev/null 2>&1; then
                             record_dry_run_cleanup_target "$inprogress_file" "$size_kb" 1 true || continue
                         fi
-                        echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} Incomplete APFS backup in $bundle_name: $backup_name${NC} · $(colorize_human_size "$size_human") ${YELLOW}dry${NC}"
+                        mole_print_cleanup_row "Incomplete APFS backup in $bundle_name: $backup_name" "$size_human"
                         tm_cleaned=$((tm_cleaned + 1))
                         note_activity
                         continue
@@ -1352,9 +1350,7 @@ clean_time_machine_failed_backups() {
                         run_with_timeout "$tm_delete_timeout" tmutil delete "$inprogress_file" 2> /dev/null || tm_delete_rc=$?
                     fi
                     if [[ $tm_delete_rc -eq 0 ]]; then
-                        local line_color
-                        line_color=$(cleanup_result_color_kb "$size_kb")
-                        echo -e "  ${line_color}${ICON_SUCCESS}${NC} Incomplete APFS backup in $bundle_name: $backup_name${NC} · $(colorize_human_size "$size_human")"
+                        mole_print_cleanup_row "Incomplete APFS backup in $bundle_name: $backup_name" "$size_human"
                         tm_cleaned=$((tm_cleaned + 1))
                         mole_add_cleaned_row 1 "$size_kb"
                         note_activity
