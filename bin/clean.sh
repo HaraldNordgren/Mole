@@ -1499,14 +1499,14 @@ _safe_clean_impl() {
             count_note="$total_count items, "
         fi
 
+        local size_display
+        size_display=$(colorize_human_size "$size_human")
         if [[ "$DRY_RUN" == "true" ]]; then
-            local size_display
-            size_display=$(colorize_human_size "$size_human")
             echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} $description${NC} · ${count_note}${size_display} ${YELLOW}dry${NC}"
         else
             local line_color
             line_color=$(cleanup_result_color_kb "$total_size_kb")
-            echo -e "  ${line_color}${ICON_SUCCESS}${NC} $description${NC} · ${count_note}${line_color}$size_human${NC}"
+            echo -e "  ${line_color}${ICON_SUCCESS}${NC} $description${NC} · ${count_note}${size_display}"
         fi
         mole_add_cleaned_row "$total_count" "$total_size_kb"
         note_activity
@@ -2011,7 +2011,7 @@ perform_cleanup() {
                     freed_size_human="Partially measured"
                 fi
             fi
-            local summary_line="Tracked cleanup: ${GREEN}${freed_size_human}${NC}"
+            local summary_line="Tracked cleanup: $(colorize_human_size "$freed_size_human")"
 
             if [[ $files_cleaned -gt 0 ]]; then
                 summary_line+=" | Items cleaned: $files_cleaned"

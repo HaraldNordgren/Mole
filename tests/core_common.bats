@@ -382,7 +382,7 @@ EOF
     [ "$output" = "~"'/Library/Application Support/MobileSync/Backup' ]
 }
 
-@test "colorize_human_size colors dry-run size units by suffix" {
+@test "colorize_human_size colors size units by suffix" {
     output="$(
         env -u NO_COLOR HOME="$HOME" /bin/bash --noprofile --norc << 'EOF'
 source "$PROJECT_ROOT/lib/core/common.sh"

@@ -862,9 +862,9 @@ colorize_human_size() {
     printf '%s%s%s' "$size_color" "$size_human" "$NC"
 }
 
-# Cleanup result lines are always shown in green. Kept as a function (callers
-# still pass a size in KB) so per-size coloring can be reintroduced in one place
-# if ever wanted.
+# Cleanup result icons are always shown in green; the size itself is colored by
+# colorize_human_size, the same as in dry-run previews. Kept as a function
+# (callers still pass a size in KB) so the icon color stays in one place.
 cleanup_result_color_kb() {
     printf '%s' "$GREEN"
 }
