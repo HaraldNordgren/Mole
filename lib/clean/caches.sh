@@ -183,11 +183,17 @@ clean_service_worker_cache() {
         # other cleaner so amounts under 1MB render as KB.
         local cleaned_human
         cleaned_human=$(bytes_to_human "$((cleaned_size * 1024))")
-        local protected_note=""
-        if [[ $protected_count -gt 0 ]]; then
-            protected_note=", ${protected_count} protected"
+        local line_color
+        line_color=$(cleanup_result_color_kb "$cleaned_size")
+        if [[ "$DRY_RUN" != "true" ]]; then
+            if [[ $protected_count -gt 0 ]]; then
+                echo -e "  ${line_color}${ICON_SUCCESS}${NC} $browser_name Service Worker${NC} · $(colorize_human_size "${cleaned_human}"), ${protected_count} protected"
+            else
+                echo -e "  ${line_color}${ICON_SUCCESS}${NC} $browser_name Service Worker${NC} · $(colorize_human_size "${cleaned_human}")"
+            fi
+        else
+            echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} $browser_name Service Worker, would clean $(colorize_human_size "$cleaned_human"), ${protected_count} protected"
         fi
-        mole_print_cleanup_row "$browser_name Service Worker" "$cleaned_human" "" "$protected_note"
         note_activity
         if [[ "$spinner_was_running" == "true" ]]; then
             MOLE_SPINNER_PREFIX="  " start_inline_spinner "Scanning browser Service Worker caches..."
@@ -595,13 +601,21 @@ clean_python_bytecode_cache_group() {
                 echo "${path}  # ${path_size_human}" >> "$EXPORT_LIST_FILE"
             done
         fi
-    fi
 
-    local skipped_note=""
-    if [[ $skipped_count -gt 0 ]]; then
-        skipped_note=", ${skipped_count} skipped"
+        if [[ $skipped_count -gt 0 ]]; then
+            echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} Python bytecode cache · ${display_root}${NC} · ${YELLOW}${removed_count} dirs, $(colorize_human_size "$size_human") ${YELLOW}dry, ${skipped_count} skipped${NC}"
+        else
+            echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} Python bytecode cache · ${display_root}${NC} · ${YELLOW}${removed_count} dirs, $(colorize_human_size "$size_human") ${YELLOW}dry${NC}"
+        fi
+    else
+        local line_color
+        line_color=$(cleanup_result_color_kb "$total_size_kb")
+        if [[ $skipped_count -gt 0 ]]; then
+            echo -e "  ${line_color}${ICON_SUCCESS}${NC} Python bytecode cache · ${display_root}${NC} · ${line_color}${removed_count} dirs, $(colorize_human_size "${size_human}"), ${skipped_count} skipped"
+        else
+            echo -e "  ${line_color}${ICON_SUCCESS}${NC} Python bytecode cache · ${display_root}${NC} · ${line_color}${removed_count} dirs, $(colorize_human_size "${size_human}")"
+        fi
     fi
-    mole_print_cleanup_row "Python bytecode cache · ${display_root}" "$size_human" "${removed_count} dirs, " "$skipped_note"
 
     mole_add_cleaned_row "$removed_count" "$total_size_kb"
     if declare -f note_activity > /dev/null 2>&1; then

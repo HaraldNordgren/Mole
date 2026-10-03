@@ -862,31 +862,11 @@ colorize_human_size() {
     printf '%s%s%s' "$size_color" "$size_human" "$NC"
 }
 
-# Print one cleanup result row. Dry-run previews and real cleanups both go
-# through here so the two modes cannot drift apart: only the icon and the
-# trailing "dry" differ, and the size is colored by unit in both.
-# Args: $1 - label
-#       $2 - formatted size; empty when the total could not be measured
-#       $3 - optional text before the size, e.g. "3 dirs, "
-#       $4 - optional text after it, e.g. ", 2 skipped"
-mole_print_cleanup_row() {
-    local label="$1"
-    local size_human="${2:-}"
-    local detail="${3:-}"
-    local note="${4:-}"
-
-    local value=""
-    if [[ -n "$size_human" ]]; then
-        value=$(colorize_human_size "$size_human")
-    fi
-
-    if [[ "${DRY_RUN:-false}" == "true" ]]; then
-        [[ -z "$value" ]] || value+=" "
-        echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} ${label} · ${detail}${value}${YELLOW}dry${NC}${note}"
-    else
-        [[ -n "$value" ]] || value="${GREEN}cleaned${NC}"
-        echo -e "  ${GREEN}${ICON_SUCCESS}${NC} ${label} · ${detail}${value}${note}"
-    fi
+# Cleanup result lines are always shown in green. Kept as a function (callers
+# still pass a size in KB) so per-size coloring can be reintroduced in one place
+# if ever wanted.
+cleanup_result_color_kb() {
+    printf '%s' "$GREEN"
 }
 
 # Percent-encode a filesystem path for use in a file:// URL. Byte-wise loop

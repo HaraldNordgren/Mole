@@ -1499,7 +1499,15 @@ _safe_clean_impl() {
             count_note="$total_count items, "
         fi
 
-        mole_print_cleanup_row "$description" "$size_human" "$count_note"
+        if [[ "$DRY_RUN" == "true" ]]; then
+            local size_display
+            size_display=$(colorize_human_size "$size_human")
+            echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} $description${NC} · ${count_note}${size_display} ${YELLOW}dry${NC}"
+        else
+            local line_color
+            line_color=$(cleanup_result_color_kb "$total_size_kb")
+            echo -e "  ${line_color}${ICON_SUCCESS}${NC} $description${NC} · ${count_note}$(colorize_human_size "${size_human}")"
+        fi
         mole_add_cleaned_row "$total_count" "$total_size_kb"
         note_activity
     fi

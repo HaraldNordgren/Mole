@@ -592,7 +592,13 @@ _clean_chromium_old_versions() {
     if [[ "$cleaned_any" == "true" ]]; then
         local size_human
         size_human=$(bytes_to_human "$((total_size * 1024))")
-        mole_print_cleanup_row "${label} old versions" "$size_human" "${cleaned_count} dirs, "
+        if [[ "$DRY_RUN" == "true" ]]; then
+            echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} ${label} old versions${NC} · ${YELLOW}${cleaned_count} dirs, $(colorize_human_size "$size_human") ${YELLOW}dry${NC}"
+        else
+            local line_color
+            line_color=$(cleanup_result_color_kb "$total_size")
+            echo -e "  ${line_color}${ICON_SUCCESS}${NC} ${label} old versions${NC} · ${line_color}${cleaned_count} dirs, $(colorize_human_size "${size_human}")"
+        fi
         mole_add_cleaned_row "$cleaned_count" "$total_size"
         note_activity
     fi
@@ -847,7 +853,13 @@ clean_edge_updater_old_versions() {
     if [[ "$cleaned_any" == "true" ]]; then
         local size_human
         size_human=$(bytes_to_human "$((total_size * 1024))")
-        mole_print_cleanup_row "Edge updater old versions" "$size_human" "${cleaned_count} dirs, "
+        if [[ "$DRY_RUN" == "true" ]]; then
+            echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} Edge updater old versions${NC} · ${YELLOW}${cleaned_count} dirs, $(colorize_human_size "$size_human") ${YELLOW}dry${NC}"
+        else
+            local line_color
+            line_color=$(cleanup_result_color_kb "$total_size")
+            echo -e "  ${line_color}${ICON_SUCCESS}${NC} Edge updater old versions${NC} · ${line_color}${cleaned_count} dirs, $(colorize_human_size "${size_human}")"
+        fi
         mole_add_cleaned_row "$cleaned_count" "$total_size"
         note_activity
     fi
@@ -1044,12 +1056,25 @@ clean_app_caches() {
     [[ $container_rc -eq 0 ]] || return "$container_rc"
 
     if [[ "$found_any" == "true" ]]; then
-        # A partial total has no size to show, so the row ends at "dry" or "cleaned".
-        local size_human=""
-        if [[ "$total_size_partial" != "true" ]]; then
-            size_human=$(bytes_to_human "$((total_size * 1024))")
+        if [[ "$DRY_RUN" == "true" ]]; then
+            if [[ "$total_size_partial" == "true" ]]; then
+                echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} Sandboxed app caches${NC} · ${YELLOW}dry${NC}"
+            else
+                local size_human
+                size_human=$(bytes_to_human "$((total_size * 1024))")
+                echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} Sandboxed app caches${NC} · $(colorize_human_size "$size_human") ${YELLOW}dry${NC}"
+            fi
+        else
+            if [[ "$total_size_partial" == "true" ]]; then
+                echo -e "  ${GREEN}${ICON_SUCCESS}${NC} Sandboxed app caches${NC} · ${GREEN}cleaned${NC}"
+            else
+                local size_human
+                size_human=$(bytes_to_human "$((total_size * 1024))")
+                local line_color
+                line_color=$(cleanup_result_color_kb "$total_size")
+                echo -e "  ${line_color}${ICON_SUCCESS}${NC} Sandboxed app caches${NC} · $(colorize_human_size "${size_human}")"
+            fi
         fi
-        mole_print_cleanup_row "Sandboxed app caches" "$size_human"
         mole_add_cleaned_row "$cleaned_count" "$total_size"
         note_activity
     fi
@@ -1104,7 +1129,13 @@ clean_handoff_pasteboard_cache() {
 
     local size_human
     size_human=$(bytes_to_human "$((total_kb * 1024))")
-    mole_print_cleanup_row "Handoff clipboard cache" "$size_human"
+    if [[ "$DRY_RUN" == "true" ]]; then
+        echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} Handoff clipboard cache${NC} · $(colorize_human_size "$size_human") ${YELLOW}dry${NC}"
+    else
+        local line_color
+        line_color=$(cleanup_result_color_kb "$total_kb")
+        echo -e "  ${line_color}${ICON_SUCCESS}${NC} Handoff clipboard cache${NC} · $(colorize_human_size "${size_human}")"
+    fi
     mole_add_cleaned_row "$cleaned_count" "$total_kb"
     note_activity
 }
@@ -1380,12 +1411,25 @@ clean_group_container_caches() {
     stop_section_spinner
 
     if [[ "$found_any" == "true" ]]; then
-        # A partial total has no size to show, so the row ends at "dry" or "cleaned".
-        local size_human=""
-        if [[ "$total_size_partial" != "true" ]]; then
-            size_human=$(bytes_to_human "$((total_size * 1024))")
+        if [[ "$DRY_RUN" == "true" ]]; then
+            if [[ "$total_size_partial" == "true" ]]; then
+                echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} Group Containers logs/caches${NC} · ${YELLOW}dry${NC}"
+            else
+                local size_human
+                size_human=$(bytes_to_human "$((total_size * 1024))")
+                echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} Group Containers logs/caches${NC} · $(colorize_human_size "$size_human") ${YELLOW}dry${NC}"
+            fi
+        else
+            if [[ "$total_size_partial" == "true" ]]; then
+                echo -e "  ${GREEN}${ICON_SUCCESS}${NC} Group Containers logs/caches${NC} · ${GREEN}cleaned${NC}"
+            else
+                local size_human
+                size_human=$(bytes_to_human "$((total_size * 1024))")
+                local line_color
+                line_color=$(cleanup_result_color_kb "$total_size")
+                echo -e "  ${line_color}${ICON_SUCCESS}${NC} Group Containers logs/caches${NC} · $(colorize_human_size "${size_human}")"
+            fi
         fi
-        mole_print_cleanup_row "Group Containers logs/caches" "$size_human"
         mole_add_cleaned_row "$cleaned_count" "$total_size"
         note_activity
     fi
@@ -1648,7 +1692,13 @@ clean_external_volume_target() {
     if [[ "$found_any" == "true" ]]; then
         local size_human
         size_human=$(bytes_to_human "$((total_size * 1024))")
-        mole_print_cleanup_row "External volume cleanup" "$size_human" "${volume_name}, "
+        if [[ "$DRY_RUN" == "true" ]]; then
+            echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} External volume cleanup${NC} · ${YELLOW}${volume_name}, $(colorize_human_size "$size_human") ${YELLOW}dry${NC}"
+        else
+            local line_color
+            line_color=$(cleanup_result_color_kb "$total_size")
+            echo -e "  ${line_color}${ICON_SUCCESS}${NC} External volume cleanup${NC} · ${line_color}${volume_name}, $(colorize_human_size "${size_human}")"
+        fi
         mole_add_cleaned_row "$cleaned_count" "$total_size"
         note_activity
     fi
@@ -2436,11 +2486,21 @@ clean_application_support_logs() {
         local size_human
         size_human=$(bytes_to_human "$total_size_bytes")
         local total_size_kb=$(((total_size_bytes + 1023) / 1024))
-        local size_prefix=""
-        if [[ "$total_size_partial" == "true" ]]; then
-            size_prefix="at least "
+        if [[ "$DRY_RUN" == "true" ]]; then
+            if [[ "$total_size_partial" == "true" ]]; then
+                echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} Application Support logs/caches${NC} · ${YELLOW}at least $(colorize_human_size "$size_human") ${YELLOW}dry${NC}"
+            else
+                echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} Application Support logs/caches${NC} · $(colorize_human_size "$size_human") ${YELLOW}dry${NC}"
+            fi
+        else
+            local line_color
+            line_color=$(cleanup_result_color_kb "$total_size_kb")
+            if [[ "$total_size_partial" == "true" ]]; then
+                echo -e "  ${line_color}${ICON_SUCCESS}${NC} Application Support logs/caches${NC} · ${line_color}at least $(colorize_human_size "${size_human}")"
+            else
+                echo -e "  ${line_color}${ICON_SUCCESS}${NC} Application Support logs/caches${NC} · $(colorize_human_size "${size_human}")"
+            fi
         fi
-        mole_print_cleanup_row "Application Support logs/caches" "$size_human" "$size_prefix"
         mole_add_cleaned_row "$cleaned_count" "$total_size_kb"
         note_activity
     fi
@@ -2518,7 +2578,13 @@ clean_cached_device_firmware() {
     if [[ "$cleaned_any" == "true" ]]; then
         local size_human
         size_human=$(bytes_to_human "$((total_size_kb * 1024))")
-        mole_print_cleanup_row "Cached device firmware" "$size_human" "${cleaned_count} files, "
+        if [[ "$DRY_RUN" == "true" ]]; then
+            echo -e "  ${YELLOW}${ICON_DRY_RUN}${NC} Cached device firmware${NC} · ${YELLOW}${cleaned_count} files, $(colorize_human_size "$size_human") ${YELLOW}dry${NC}"
+        else
+            local line_color
+            line_color=$(cleanup_result_color_kb "$total_size_kb")
+            echo -e "  ${line_color}${ICON_SUCCESS}${NC} Cached device firmware${NC} · ${line_color}${cleaned_count} files, $(colorize_human_size "${size_human}")"
+        fi
         mole_add_cleaned_row "$cleaned_count" "$total_size_kb"
         note_activity
     fi
